@@ -22,17 +22,18 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
   * Movies & TV Movies                                            商品分类
   */
 
-case class Product( productId: String, name: String, imageUrl: String, categories: String)
+case class Product( productId: Int, name: String, imageUrl: String, categories: String)
 
 /**
   * Rating数据集
-  * A1YH0U6RSWKGLJ    用户ID
-  * B00652U6JC        商品ID
+  * 174744            用户ID
+  * A1YH0U6RSWKGLJ    亚马逊用户ID，不需要
+  * 1526863           商品ID
   * 5.0               评分
-  * 1326672000        时间戳
+  * 1458000000        时间戳
   */
 
-case class Rating( userId: String, productId: String, score: Double, timestamp: Int )
+case class Rating( userId: Int, productId: Long, score: Double, timestamp: Int )
 
 
 case class MongoConfig( uri: String, db: String )
@@ -66,14 +67,14 @@ object DataLoader {
       // product数据通过^分隔，切分出来
       val attr = item.split("\\^")
       // 转换成Product
-      Product( attr(0).trim, attr(1).trim, attr(2).trim, attr(3).trim )
+      Product( attr(0).toInt, attr(1).trim, attr(2).trim, attr(3).trim )
     } ).toDF()
 //    productDF.show()
 
     val ratingRDD = spark.sparkContext.textFile(RATING_DATA_PATH)
     val ratingDF = ratingRDD.map(item => {
       val attr = item.split(",")
-      Rating(attr(0).trim, attr(1).trim, attr(2).toDouble, attr(3).toInt)
+      Rating(attr(0).toInt, attr(1).toLong, attr(2).toDouble, attr(3).toInt)
     }).toDF()
 
     implicit val mongoConfig = MongoConfig( config("mongo.uri"), config("mongo.db") )
