@@ -40,7 +40,7 @@ case class MongoConfig( uri: String, db: String )
 object DataLoader {
   // 定义数据文件路径
   val PRODUCT_DATA_PATH = "recommender/DataLoader/src/main/resources/movies&tv/products.csv"
-  val RATING_DATA_PATH = "recommender/DataLoader/src/main/resources/movies&tv/ratings1.csv"
+  val RATING_DATA_PATH = "recommender/DataLoader/src/main/resources/movies&tv/ratings.csv"
   // 定义mongodb中存储的表名
   val MONGODB_PRODUCT_COLLECTION = "Product"
   val MONGODB_RATING_COLLECTION = "Rating"
