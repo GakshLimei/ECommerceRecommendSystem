@@ -27,7 +27,6 @@ case class Product( productId: Int, name: String, imageUrl: String, categories: 
 /**
   * Rating数据集
   * 174744            用户ID
-  * A1YH0U6RSWKGLJ    亚马逊用户ID，不需要
   * 1526863           商品ID
   * 5.0               评分
   * 1458000000        时间戳
