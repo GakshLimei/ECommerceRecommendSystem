@@ -10,17 +10,17 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 import redis.clients.jedis.Jedis
 
 /**
- *@author Gary Chen
- *@description OnlineRecommender
- *@date 2023/12/15 06:10
- *@project
- *
- **/
+  * @author Gary Chen
+  * @description
+  * @date 2024/01/27 13:59
+  * @project
+  *
+  * */
 // 定义一个连接助手对象，建立到redis和mongodb的连接
 object ConnHelper extends Serializable{
   // 懒变量定义，使用的时候才初始化
   lazy val jedis = new Jedis("niit-master")
-  lazy val mongoClient = MongoClient(MongoClientURI("mongodb://niit-master:27017/my_recommender"))
+  lazy val mongoClient = MongoClient(MongoClientURI("mongodb://niit-master:27017/recommender"))
 }
 
 case class MongoConfig( uri: String, db: String )
@@ -44,9 +44,9 @@ object OnlineRecommender {
   def main(args: Array[String]): Unit = {
     val config = Map(
       "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb://niit-master:27017/my_recommender",
-      "mongo.db" -> "my_recommender",
-      "kafka.topic" -> "my_recommender"
+      "mongo.uri" -> "mongodb://niit-master:27017/recommender",
+      "mongo.db" -> "recommender",
+      "kafka.topic" -> "recommender"
     )
 
     // 创建spark conf
@@ -79,7 +79,7 @@ object OnlineRecommender {
       "bootstrap.servers" -> "niit-master:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
-      "group.id" -> "my_recommender",
+      "group.id" -> "recommender",
       "auto.offset.reset" -> "latest"
     )
     // 创建一个DStream
@@ -185,7 +185,8 @@ object OnlineRecommender {
     // 根据公式计算所有的推荐优先级，首先以productId做groupby
     scores.groupBy(_._1).map{
       case (productId, scoreList) =>
-        ( productId, scoreList.map(_._2).sum/scoreList.length + log(increMap.getOrDefault(productId, 1)) - log(decreMap.getOrDefault(productId, 1)) )
+        ( productId, scoreList.map(_._2).sum/scoreList.length + log(increMap.getOrDefault(productId, 1))
+          - log(decreMap.getOrDefault(productId, 1)) )
     }
     // 返回推荐列表，按照得分排序
       .toArray
