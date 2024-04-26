@@ -4,20 +4,20 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 
 /**
- *@author Gary Chen
- *@description 
- *@date 2024/01/03 01:03
- *@project 
- * 
- **/
+  * @author Gary Chen
+  * @description
+  * @date 2024/01/27 13:59
+  * @project
+  *
+  * */
 
-case class ProductRating( userId: Int, productId: Long, score: Double, timestamp: Int )
+case class ProductRating( userId: Int, productId: Int, score: Double, timestamp: Int )
 case class MongoConfig( uri: String, db: String )
 
 // 定义标准推荐对象
-case class Recommendation( productId: Long, score: Double )
+case class Recommendation( productId: Int, score: Double )
 // 定义商品相似度列表
-case class ProductRecs( productId: Long, recs: Seq[Recommendation] )
+case class ProductRecs( productId: Int, recs: Seq[Recommendation] )
 
 object ItemCFRecommender {
   // 定义常量和表名
@@ -28,8 +28,8 @@ object ItemCFRecommender {
   def main(args: Array[String]): Unit = {
     val config = Map(
       "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb://niit-master:27017/my_recommender",
-      "mongo.db" -> "my_recommender"
+      "mongo.uri" -> "mongodb://niit-master:27017/recommender",
+      "mongo.db" -> "recommender"
     )
     // 创建一个spark config
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("ItemCFRecommender")
@@ -82,7 +82,7 @@ object ItemCFRecommender {
     val simDF = cooccurrenceDF.map{
       row =>
         val coocSim = cooccurrenceSim( row.getAs[Long]("cocount"), row.getAs[Long]("count1"), row.getAs[Long]("count2") )
-        ( row.getLong(0), ( row.getLong(1), coocSim ) )
+        ( row.getInt(0), ( row.getInt(1), coocSim ) )
     }
       .rdd
       .groupByKey()
