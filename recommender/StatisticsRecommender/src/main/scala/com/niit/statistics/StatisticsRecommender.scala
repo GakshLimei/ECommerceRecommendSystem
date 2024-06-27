@@ -7,13 +7,14 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 /**
- *@author Gary Chen
- *@description 
- *@date 2023/12/15 05:44
- *@project 
- * 
- **/
-case class Rating( userId: Int, productId: Long, score: Double, timestamp: Int )
+  * @author Gary Chen
+  * @description
+  * @date 2024/01/27 13:59
+  * @project
+  *
+  * */
+
+case class Rating( userId: Int, productId: Int, score: Double, timestamp: Int )
 case class MongoConfig( uri: String, db: String )
 
 object StatisticsRecommender {
@@ -27,8 +28,8 @@ object StatisticsRecommender {
   def main(args: Array[String]): Unit = {
     val config = Map(
       "spark.cores" -> "local[1]",
-      "mongo.uri" -> "mongodb://niit-master:27017/my_recommender",
-      "mongo.db" -> "my_recommender"
+      "mongo.uri" -> "mongodb://niit-master:27017/recommender",
+      "mongo.db" -> "recommender"
     )
     // 创建一个spark config
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("StatisticsRecommender")
