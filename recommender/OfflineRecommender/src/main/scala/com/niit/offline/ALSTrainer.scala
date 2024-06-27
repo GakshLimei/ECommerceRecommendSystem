@@ -1,25 +1,25 @@
 package com.niit.offline
 
 import breeze.numerics.sqrt
-import com.niit.offline.OfflineRecommender.MONGODB_RATING_COLLECTION
+import OfflineRecommender.MONGODB_RATING_COLLECTION
 import org.apache.spark.SparkConf
 import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
 /**
- *@author Gary Chen
- *@description 
- *@date 2023/12/15 03:53
- *@project 
- * 
- **/
+  * @author Gary Chen
+  * @description
+  * @date 2024/01/27 13:59
+  * @project
+  *
+  * */
 object ALSTrainer {
   def main(args: Array[String]): Unit = {
     val config = Map(
       "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb://niit-master:27017/my_recommender",
-      "mongo.db" -> "my_recommender"
+      "mongo.uri" -> "mongodb://niit-master:27017/recommender",
+      "mongo.db" -> "recommender"
     )
     // 创建一个spark config
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("OfflineRecommender")
@@ -38,7 +38,7 @@ object ALSTrainer {
       .as[ProductRating]
       .rdd
       .map(
-      rating => Rating(rating.userId, rating.productId.toInt, rating.score)
+      rating => Rating(rating.userId, rating.productId, rating.score)
     ).cache()
 
     // 数据集切分成训练集和测试集
